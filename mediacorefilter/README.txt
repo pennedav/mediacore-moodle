@@ -18,7 +18,7 @@ Automagically detects links to MediaCore videos e.g.
 
 http://demo.mediacore.tv/media/a-few-colors
 
-And turns them into iframes, thus embedding the video in the page. 
+And turns them into the proper embed code for viewing in the page. 
 
 Works in conjunction with "Multimedia plugins" filter & the TinyMCE plugin.
 
@@ -29,7 +29,7 @@ Installation:
 1) Unzip the package into /path/to/moodle/filters/mediacore.
 2) Go to Settings -> Site administration -> Plugins -> Filters and:
     a) Make sure that the "Multimedia plugins" filter is enabled.
-    b) Enable the MediaCore filter; set the iframe size.
+    b) Enable the MediaCore filter; set your URL.
 3) Optionally install the TinyMCE plugin to allow easier embedding.
 
 

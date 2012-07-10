@@ -16,12 +16,10 @@ page.
 ====
 MediaCore Filter Installation:
 ====
-1) Copy "mediacorefilters" folder into /path/to/moodle/filters/
-
+1) Unzip the package into /path/to/moodle/filters/mediacore.
 2) Go to Settings -> Site administration -> Plugins -> Filters and:
     a) Make sure that the "Multimedia plugins" filter is enabled.
-    b) Enable the MediaCore filter; set the iframe size.
-
+    b) Enable the MediaCore filter; set your URL.
 3) Optionally install the TinyMCE plugin to allow easier embedding.
 
 ====

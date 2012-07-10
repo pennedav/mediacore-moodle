@@ -26,9 +26,6 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
 
-
-    $settings->add(new admin_setting_configtext('filter_mediacorefilter_media_height', get_string('mcore_iframe_height','filter_mediacorefilter'),get_string('mcore_iframe_height','filter_mediacorefilter'), 225));
-
-    $settings->add(new admin_setting_configtext('filter_mediacorefilter_media_width', get_string('mcore_iframe_width','filter_mediacorefilter'),get_string('mcore_iframe_width','filter_mediacorefilter'), 400));
+    $settings->add(new admin_setting_configtext('filter_mediacorefilter_url', get_string('mcore_url','filter_mediacorefilter'),get_string('mcore_url','filter_mediacorefilter'), 'http://demo.mediacore.tv'));
 
 }
