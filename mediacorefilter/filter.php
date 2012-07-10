@@ -87,12 +87,12 @@ function filter_mediacorefilter_callback($link) {
 	// Then use the slug to query the MediaCore API to get the embed code
 	//
 	$media_api = $CFG->filter_mediacorefilter_url . '/api/media/get?slug=' . $slug;
-    $result = json_decode(file_get_contents($media_api));
-    if($result) {
-    	$output = $result->embed;
-    } else {
-    	$output = '<p><em>No video found.</em></p>';
-    }
+	$result = json_decode(file_get_contents($media_api));
+	if($result) {
+		$output = $result->embed;
+	} else {
+		$output = '<p><em>No video found.</em></p>';
+	}
 	return $output;
 }
 
