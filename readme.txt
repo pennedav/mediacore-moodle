@@ -38,8 +38,8 @@ MediaCore Insert (for TinyMCE) Installation:
 
 	a) At the bottom of the file, just above "return $params", add:
 		// ADDED FOR MEDIACORE 
-		$params['plugins'] .= ",mediacorefilter";
-		$params['theme_advanced_buttons3_add'] = $params['theme_advanced_buttons3_add'] . ",|,mediacorefilter";
+		$params['plugins'] .= ",mediacoreinsert";
+		$params['theme_advanced_buttons3_add'] = $params['theme_advanced_buttons3_add'] . ",|,mediacoreinsert";
 
 4) Add some content; see the MediaCore button; click it. You're go to go!
 
