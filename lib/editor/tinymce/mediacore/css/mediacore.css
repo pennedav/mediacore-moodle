@@ -1,103 +1,168 @@
-
-html, body { 
-	background: #FFF; 
-	margin: 0; 
+html, body {
+	background: #FFF;
+	margin: 0;
+	overflow: hidden;
 }
 .searchreset {
 	display: block;
 	float: right;
 }
-	
-#mcore-embed {	
-	
-	font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
-	-webkit-font-smoothing:subpixel-antialiased;
-	text-rendering:optimizeLegibility; font-size:13px;
-	color:#494949;
+.ellipsis {
+	white-space: nowrap;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
-	
-	
-	
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	input, textarea, select {
+		-webkit-appearance: none;
+	}
+
+	input, textarea, select {
+		border: 1px solid #a6a8aa;
+		padding: 4px 15px;
+		line-height: 16px;
+		background: #fff;
+		-webkit-appearance: none;
+		-webkit-box-shadow: inset 0 1px 0 #e2e2e2, 0 1px 0 rgba(255,255,255,0.7);
+		-webkit-border-radius: 5px;
+		color:#494949;
+		font-weight:400;
+		font-size: 14px;
+		margin: 0;
+	}
+
+	select {
+		background: url('../images/select-bg.png') top right;
+		height:25px;
+		border: 1px solid #959eae;
+		-webkit-box-shadow: 0 1px 0 #e2e3e5;
+		padding: 0 15px;
+	}
+
+	select:focus {
+		outline: none;
+		background-position: right -25px;
+		border: 1px solid #5ca5cf;
+		-webkit-box-shadow: 0 0 2px rgba(92,165,207, 0.5);
+	}
+
+	select:active {
+		outline: none;
+		border: 1px solid #949aa3;
+		background-position: right -50px;
+		-webkit-box-shadow: 0 1px 0 rgba(255,255,255,0.7);
+	}
+}
+
+#mcore-embed {
+	height: 684px;
+	-webkit-font-smoothing:subpixel-antialiased;
+	color:#494949;
+	font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+	font-size:13px;
+	text-rendering:optimizeLegibility;
+	overflow: hidden;
+}
+
+#mcore-embed .mcore-lti-select {
+	height: 49px;
+	padding: 10px 15px;
+	border-bottom: 1px solid #b4bdc2;
+}
+#mcore-embed .mcore-lti-select label,
+#mcore-embed .mcore-lti-select select {
+	float: left;
+	width: 100%;
+	max-width: 100%;
+}
+#mcore-embed .mcore-lti-select label {
+	margin-bottom: 6px;
+	color:#3c4d5a;
+	font-size:14px;
+	font-weight:500;
+	text-shadow:0 1px 0 #FFF;
+}
 #mcore-embed .mcore-header {
 	background:url(../images/header.png) repeat-x top center;
 	clear: both;
 	height:27px;
 	left: 0;
+	padding:10px 15px;
 	position:relative;
 	top: 0;
 	z-index:1002;
-	padding:10px 15px;
 }
 
 #mcore-embed .mcore-pagination {
 	float:right;
 }
-	
+
 #mcore-embed .mcore-header .mcore-btn {
-	height:28px;
-	display:inline-block;
 	background:url(../images/header-btn-left.png) no-repeat top left;
+	display:inline-block;
+	height:28px;
 	padding-left:4px;
 	text-indent: -9999px;
 }
-	
+
 #mcore-embed .mcore-header .mcore-btn span {
 	background:url(../images/header-btn-right.png) no-repeat top right;
-	height:28px;
 	display:block;
+	height:28px;
 	padding:0 12px 0 8px;
 }
-	
+
 #mcore-embed .mcore-header .mcore-pagination .mcore-prev {
 	background:url(../images/pagination.png) no-repeat top left;
-	width:31px;
-	height:28px;
 	cursor:pointer;
+	height:28px;
 	margin:0;
 	padding:0;
+	width:31px;
 }
-	
+
 #mcore-embed .mcore-header .mcore-pagination .mcore-next {
 	background:url(../images/pagination.png) no-repeat top right;
-	width:30px;
-	height:28px;
 	cursor:pointer;
+	height:28px;
 	margin:0 0 0 -4px;
 	padding:0;
+	width:30px;
 }
-	
+
 #mcore-embed .mcore-header .mcore-pagination .mcore-next.mcore-disabled {
 	background-position:100% -84px;
 	cursor:default;
 	pointer-events: none;
 }
-	
+
 #mcore-embed .mcore-header .mcore-pagination .mcore-prev.mcore-disabled {
 	background-position:0 -84px;
 	cursor:default;
 }
-	
+
 #mcore-embed .mcore-header .mcore-title {
+	color:#3c4d5a;
 	font-size:18px;
 	font-weight:500;
-	color:#3c4d5a;
-	text-shadow:0 1px 0 #FFF;
 	padding-top:4px;
+	text-shadow:0 1px 0 #FFF;
 }
-	
+
 #mcore-embed .mcore-close {
 	cursor:pointer;
 }
-	
+
 #mcore-embed .mcore-search {
 	background:url(../images/search-bg.png) repeat-x top;
-	
 	height:29px;
-	position:relative;
 	margin:-1px 0 0;
 	padding:9px 15px;
+	position:relative;
 }
-	
+
 #mcore-embed .mcore-search .mcore-search-field {
 	background:#fff url(../images/magnify-glass.png) no-repeat 12px 5px;
 	border-radius:15px;
@@ -114,107 +179,102 @@ html, body {
 	font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
 	padding:0 10px 0 35px;
 }
-	
+
 #mcore-embed .mcore-search .mcore-clear-search {
-	display: block;
-	width:18px;
-	height:18px;
-	position:absolute;
-	top:15px;
-	right:24px;
 	background:url(../images/clear-search.png) no-repeat 0 0;
 	cursor:pointer;
+	display: block;
+	height:18px;
+	position:absolute;
+	right:24px;
 	text-indent: -9990px;
+	top:15px;
+	width:18px;
 }
-	
+
 #mcore-embed .mcore-content {
 	background:#fff;
 	clear: both;
-	height:341px;
 	float:left;
-	width:100%;
+	height:486px;
 	overflow-y:scroll;
+	width:100%;
+	min-width:300px;
 }
-	
+
 #mcore-embed .mcore-message {
 	margin: 40px auto 0 auto;
 	text-align: center;
 	width: 250px;
 }
-	
+
 #mcore-embed .mcore-message h2 {
-	text-align:center;
-	font-size:25px;
 	color:#a3abb8;
+	font-size:25px;
 	line-height:25px;
 	margin-bottom:10px;
-}
-	
-#mcore-embed .mcore-message p {
 	text-align:center;
-	font-size:15px;
-	color:#afb6c3;
-	font-weight:300;
 }
-	
-#mcore-embed.zero-state .mcore-media,#mcore-embed .mcore-message {
 
+#mcore-embed .mcore-message p {
+	color:#afb6c3;
+	font-size:15px;
+	font-weight:300;
+	text-align:center;
 }
-	
+
 #mcore-embed.zero-state .mcore-content {
 	background:#fff url(../images/zero-state.png) no-repeat center 85px;
 }
-	
+
 #mcore-embed.connection-error .mcore-content {
 	background:#fff url(../images/error.png) no-repeat center 85px;
 }
-	
+
 #mcore-embed.zero-state .mcore-message,#mcore-embed.connection-error .mcore-message {
 	display:block;
 }
-	
+
 #mcore-embed .mcore-loading {
+	background:url(../images/spinner.gif) no-repeat center;
+	display:none;
+	height:80px;
+	left:50%;
+	margin:-40px 0 0 -40px;
 	position:absolute;
 	top:50%;
 	width:80px;
-	height:80px;
-	left:50%;
-	display:none;
-	background:url(../images/spinner.gif) no-repeat center;
-	margin:-40px 0 0 -40px;
 }
-	
-	
 
 #mcore-embed .mcore-media {
-	height:56px;
+	height:80px;
 	border-bottom:1px solid #e8e8e8;
-	padding:12px 15px;
+	position: relative;
 }
-#mcore-embed .mcore-media a {	
+#mcore-embed .mcore-media a {
 	border: 0 !important;
 	color:#3e8ae5;
 	display: block;
 	text-decoration: none;
 }
-#mcore-embed .mcore-media a img {	
+#mcore-embed .mcore-media a img {
 	border: 0 !important;
 }
 #mcore-embed .mcore-media .mcore-thumbnail {
 	border: 0;
-	float:left;
-	margin-right:15px;
-	position:relative;
+	position:absolute;
 	cursor:pointer;
 	height:56px;
 	width:100px;
+	top: 12px;
+	left: 15px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-thumbnail img {
 	width:100px;
 	height:56px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-thumbnail .mcore-border {
 	position:absolute;
 	top:0;
@@ -223,7 +283,7 @@ html, body {
 	bottom:0;
 	border:1px solid rgba(0,0,0,0.4);
 }
-	
+
 #mcore-embed .mcore-media .mcore-thumbnail .mcore-overlay {
 	position:absolute;
 	bottom:0;
@@ -233,7 +293,7 @@ html, body {
 	background:rgba(0,0,0,0.55);
 	border-top:1px solid rgba(0,0,0,0.4);
 }
-	
+
 #mcore-embed .mcore-media .mcore-overlay .mcore-icon {
 	position:absolute;
 	width:17px;
@@ -242,11 +302,11 @@ html, body {
 	left:5px;
 	top:1px;
 }
-	
+
 #mcore-embed .mcore-audio .mcore-overlay .mcore-icon {
 	background:url(../images/audio-icon.png) no-repeat center;
 }
-	
+
 #mcore-embed .mcore-media .mcore-length {
 	position:absolute;
 	color:#FFF;
@@ -257,30 +317,28 @@ html, body {
 	right:5px;
 	top:0;
 }
-	
+
 #mcore-embed .mcore-media .mcore-info {
-	float:left;
-	width:190px;
-	margin-right:20px;
+	height: 56px;
+	padding: 12px 0;
+	margin-left: 125px;
+	margin-right: 77px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-info h3 {
-	width:210px;
-	white-space:nowrap;
-	overflow:hidden;
-	text-overflow:ellipsis;
+	width: 100%;
 	color:#3e8ae5;
 	font-size:17px;
 	line-height:24px;
 	cursor:pointer;
 	margin:6px 0 5px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-info .mcore-date {
 	color:#858d9e;
 	font-size:13px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-add-btn {
 	height:23px;
 	background:url(../images/add-btn-l.png) no-repeat 0 0;
@@ -288,7 +346,7 @@ html, body {
 	cursor:pointer;
 	margin-top:10px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-add-btn a {
 	display: block;
 	margin-left:4px;
@@ -298,8 +356,8 @@ html, body {
 	padding:0 10px 0 4px;
 }
 #mcore-embed .mcore-media .mcore-add-btn a {
-		color: #444;
-		text-decoration: none;
+	color: #444;
+	text-decoration: none;
 }
 #mcore-embed .mcore-media .mcore-add-btn .mcore-icon {
 	display: inline-block;
@@ -309,11 +367,11 @@ html, body {
 	margin:0;
 	padding:0;
 }
-	
+
 #mcore-embed .mcore-media .mcore-add-btn:active .mcore-icon {
 	background-position:center center;
 }
-	
+
 #mcore-embed .mcore-footer {
 	background:url(../images/footer-bg.png) repeat-x top;
 	height:35px;
@@ -329,37 +387,37 @@ html, body {
 	line-height:35px;
 	text-shadow:0 1px 0 #FFF;
 }
-	
+
 #mcore-embed .mcore-media.clicked .mcore-thumbnail,#mcore-embed .mcore-media.clicked .mcore-info h3,#mcore-embed .mcore-media.clicked .mcore-add-btn {
 	cursor:default;
 }
-	
+
 #mcore-embed .mcore-media.clicked .mcore-add-btn .mcore-icon {
 	background-position:center center;
 	opacity:.7;
 }
-	
-	.mcore-clearfix:after {
+
+.mcore-clearfix:after {
 	content:'';
 	display:block;
 	height:0;
 	clear:both;
 	visibility:hidden;
 }
-	
-	* html .mcore-clearfix {
+
+* html .mcore-clearfix {
 	height:1%;
 }
-	
-	:first-child+html .mcore-clearfix {
+
+:first-child+html .mcore-clearfix {
 	display:inline-block;
 }
-	
 
 #mcore-embed .mcore-media .mcore-add {
-	float:right;
-	position: relative;
-	z-index: 9000;
+	position: absolute;
+	right: 15px;
+	top: 50%;
+	margin-top: -20px;
 }
 #mcore-embed .mcore-header .mcore-btn:hover,#mcore-embed .mcore-header .mcore-pagination .mcore-prev:hover {
 	background-position:0 -28px;
@@ -370,19 +428,19 @@ html, body {
 #mcore-embed .mcore-header .mcore-btn:hover span,#mcore-embed .mcore-header .mcore-pagination .mcore-next:hover {
 	background-position:100% -28px;
 }
-	
+
 #mcore-embed .mcore-header .mcore-btn:active,#mcore-embed .mcore-header .mcore-pagination .mcore-prev:active {
 	background-position:0 -56px;
 }
-	
+
 #mcore-embed .mcore-header .mcore-btn:active span,#mcore-embed .mcore-header .mcore-pagination .mcore-next:active {
 	background-position:100% -56px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-add-btn:active,#mcore-embed .mcore-media.clicked .mcore-add-btn {
 	background-position:0 -23px;
 }
-	
+
 #mcore-embed .mcore-media .mcore-add-btn:active span,#mcore-embed .mcore-media.clicked .mcore-add-btn span {
 	background-position:100% -23px;
 }
