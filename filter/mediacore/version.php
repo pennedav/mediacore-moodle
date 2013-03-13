@@ -16,14 +16,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Soundcloud filter
+ * MediaCore filter
  *
  * @package    filter
- * @subpackage Mediacore
+ * @subpackage mediacore
  * @copyright  2012 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die('Invalid access');
 
-$plugin->version = 2011063000;
+$plugin                     = new stdClass();
+$plugin->version            = 2013031300;
+$plugin->component          = 'filter_mediacore';
+$plugin->release            = '1.5';
+$plugin->requires           = 2011033007;
+$plugin->system_version     = 1.5; // Used to send information to MediaCore
