@@ -43,20 +43,23 @@ MediaCore Filter and Local Plugin Installation:
 ==============================
 1. Copy the ```/filters/mediacore``` folder into ```/path/to/moodle/filters/```
 2. Copy the ```/local/mediacore``` folder into ```/path/to/moodle/local/```
-2. Login to Moodle as an administrator. Navigate to ```Settings > Site administration > Notifications```
-	* You should see that the ```MediaCore Media filter``` and ```MediaCore package libraries``` need "to be upgraded" (If you have any previously installed MediaCore filter or Local Plugin, please delete them first!).
+3. Login to Moodle as an administrator. Navigate to ```Settings > Site administration > Notifications```
+	* You should see that the ```MediaCore Media filter``` and ```MediaCore package libraries``` need "to be upgraded" 
+	  (If you have any previously installed MediaCore filter or Local Plugin, please delete them first!).
+	  If the settings update screen doesn't appear, see pt#9 below after installation.
 	* Click on the "Upgrade Moodle database now" button at the bottom of this page to begin the upgrade.
-3. After the filter and plugin have been installed, you will be directed to the MediaCore Local Plugin settings page.
-4. Enter your MediaCore URL in the ```Your MediaCore URL``` field. Make sure the URL begins with "http://", and no trailing slash please!
-5. If you have any LTI external tools set up in Moodle, you can map each tool to a Moodle course on this settings screen as well. 
+4. After the filter and plugin have been installed, you will be directed to the MediaCore Local Plugin settings page.
+5. Enter your MediaCore URL in the ```Your MediaCore URL``` field. Make sure the URL begins with "http://", and no trailing slash please!
+6. If you have any LTI external tools set up in Moodle, you can map each tool to a Moodle course on this settings screen as well. 
+	* Mappings are created based on the LTI tool's base url and your MediaCore URL.
 	* Mapping an external LTI tool (domain) to a Moodle course makes content in that domain available to be embedded in that course. 
-	* Instructions for setting up LTI external tools in Moodle can be found [here](http://docs.moodle.org/23/en/External_tool_settings). 
+	* Instructions for setting up LTI external tools domains in Moodle can be found [here](http://docs.moodle.org/23/en/External_tool_settings). 
 	* Instructions for creating LTI domains in your MediaCore app can be found [here](http://support.mediacore.com/customer/portal/articles/869178-what-is-lti-integration-and-how-do-i-set-it-up-).
-6. Enable the ```MediaCore filter```:
+7. Enable the ```MediaCore filter```:
 	* Go to ```Settings > Site administration > Plugins > Filters > Manage Filters``` and make sure that the ```MediaCore Media``` filter is set to ```On``` and applied to ```Content```.
-7. Make sure the ```MediaCore local plugin``` is available:
+8. Make sure the ```MediaCore local plugin``` is available:
 	* Go to ```Settings > Site administration > Plugins > Local plugins > Manage local plugins``` and make sure that the ```MediaCore package libraries``` is available in the list of plugins.
-8. Any time you want to change these settings, navigate to ```Settings > Site administration > Plugins > Local plugins > Mediacore pacakge libraries```, to update them.
+9. Any time you want to change these settings, navigate to ```Settings > Site administration > Plugins > Local plugins > Mediacore pacakge libraries``` to update them.
 
 ---
 Finally, add some content in Moodle:
