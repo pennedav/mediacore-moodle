@@ -47,7 +47,7 @@ function local_mediacore_course_delete_event_handler($course) {
 function local_mediacore_build_connection_options($lti_tools, $type_id) {
 
     $selected = ($type_id === 0) ? 'selected ' : '';
-    $html .= '<option value="0" ' . $selected . '>' .
+    $html = '<option value="0" ' . $selected . '>' .
         get_string('tinymce_public_connection', 'local_mediacore') .
         '</option>';
 
