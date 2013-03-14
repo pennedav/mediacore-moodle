@@ -14,7 +14,7 @@ right from within Moodle.
 1. The TinyMCE plugin gives you a button to embed public or private media links into any TinyMCE rich text editor instance.
 2. The MediaCore Filter turnes these text links into the appropriate embed code so that your video appears right within your course content.
 
-* Note: These plugins/add-ons are supported on Moodle v2.* up to (but no including v2.4)
+* Note: These plugins/add-ons are supported on Moodle v2.2 and v2.3.
 
 ---
 MediaCore TinyMCE Plugin Installation:
