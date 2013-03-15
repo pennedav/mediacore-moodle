@@ -24,32 +24,33 @@ require_once(dirname(__FILE__) . '/../../mod/lti/locallib.php');
  */
 class mediacore_media
 {
+    private $_baseurl;
     private $_course;
     private $_course_id;
     private $_curr_pg;
     private $_has_next_pg;
     private $_has_prev_pg;
+    private $_hostname;
     private $_limit;
-    private $_media_api_url;
-    private $_media_get_api_url;
-    private $_mediacore_url;
-    private $_mediacore_url_regex;
     private $_next_pg;
     private $_pg_count;
     private $_prev_pg;
-    private $_rowSet;
+    private $_port;
+    private $_rowset;
     private $_rowset_count;
+    private $_scheme;
     private $_search;
 
     /**
      * Constructor
-     * @param string $mediacore_url
+     * @param string $url
      */
-    public function __construct($mediacore_url) {
-        $this->_mediacore_url = rtrim($mediacore_url, '/');
-        $this->_mediacore_url_regex = '/' . str_replace('/', '\/', $this->_mediacore_url) . '\/[^"]+/i';
-        $this->_media_api_url = $mediacore_url . '/api/media';
-        $this->_media_get_api_url = $mediacore_url . '/api/media/get';
+    public function __construct($url) {
+        $url_components = parse_url($url);
+        $this->_scheme = 'http://';
+        $this->_hostname = $url_components['host'];
+        $this->_port = (isset($url_components['port'])) ? ':' . $url_components['port'] : '';
+        $this->_baseurl = $this->_scheme . $this->_hostname . $this->_port;
     }
 
     /**
@@ -57,11 +58,11 @@ class mediacore_media
      * @param int $curr_pg
      * @param string $search
      * @param int $limit
-     * @param int|null $course_id
-     * @param int_null $type_id
+     * @param int|NULL $course_id
+     * @param int_NULL $type_id
      * @return array
      */
-    public function fetch_media($curr_pg = 0, $search = '', $limit = 6, $course_id = null, $type_id = null) {
+    public function fetch_media($curr_pg=0, $search='', $limit=6, $course_id=NULL, $type_id=NULL) {
 
         $this->_curr_pg = $curr_pg; //zero-indexed
         $this->_search = $search;
@@ -74,40 +75,40 @@ class mediacore_media
             'search' => $this->_search,
         );
 
-        $is_lti_request = (isset($course_id, $type_id) && $type_id > 0);
+        $is_lti_request = (!empty($course_id) && !empty($type_id));
         if ($is_lti_request) {
-            $params = $this->_get_signed_lti_params($this->_media_api_url, $course_id, $type_id, $params);
+            $params = $this->_get_signed_lti_params($this->get_media_api_url(), $course_id, $type_id, $params);
         }
-        $result_obj = $this->_get_curl_response($this->_media_api_url, $params);
+        $result_obj = $this->_get_curl_response($this->get_media_api_url(), $params);
         if (empty($result_obj)) {
             return FALSE;
         }
 
         //build result data
-        $this->_rowSet = $result_obj->media;
+        $this->_rowset = $result_obj->media;
         $this->_rowset_count = $result_obj->count;
         $this->_pg_count = ceil($this->_rowset_count / $this->_limit);
         $this->_next_pg = $this->_curr_pg + 1;
         $this->_has_next_pg = ($this->_next_pg < $this->_pg_count);
         $this->_prev_pg = $this->_curr_pg - 1;
         $this->_has_prev_pg = ($this->_prev_pg >= 0);
-        return $this->_rowSet;
+        return $this->_rowset;
     }
 
     /**
      * Fetch a media item's embed code
      * @param string $slug
-     * @param int|null $course_id
-     * @param int|null $type_id
+     * @param int|NULL $course_id
+     * @param int|NULL $type_id
      * @return string
      */
-    public function fetch_media_embed($slug, $course_id = null, $type_id = null) {
+    public function fetch_media_embed($slug, $course_id=NULL, $type_id=NULL) {
         $params = array('slug' => $slug);
-        $is_lti_request = (isset($course_id, $type_id) && $type_id > 0);
+        $is_lti_request = (!empty($course_id) && !empty($type_id));
         if ($is_lti_request) {
-            $params = $this->_get_signed_lti_params($this->_media_get_api_url, $course_id, $type_id, $params);
+            $params = $this->_get_signed_lti_params($this->get_media_api_get_url(), $course_id, $type_id, $params);
         }
-        $result_obj = $this->_get_curl_response($this->_media_get_api_url, $params);
+        $result_obj = $this->_get_curl_response($this->get_media_api_get_url(), $params);
         if (empty($result_obj)) {
             return FALSE;
         }
@@ -124,13 +125,14 @@ class mediacore_media
      * @return string
      */
     private function _get_embed_iframe_with_lti_params($embed_html, $course_id, $type_id) {
-        preg_match($this->_mediacore_url_regex, $embed_html, $matches);
+        $baseurl_regex = '/' . str_replace('/', '\/', $this->get_baseurl()) . '\/[^"]+/i';
+        preg_match($baseurl_regex, $embed_html, $matches);
         if (isset($matches[0])) {
-            $url_parts = parse_url($matches[0]);
-            $base_url = $this->_mediacore_url . $url_parts['path'];
+            $url_components = parse_url($matches[0]);
+            $url = $this->_baseurl . $url_components['path'];
             $params = array('iframe' => 'True');
-            $lti_params = $this->_get_signed_lti_params($base_url, $course_id, $type_id, $params);
-            $new_iframe_src = $base_url . '?' . $this->_encode_params($lti_params);
+            $lti_params = $this->_get_signed_lti_params($url, $course_id, $type_id, $params);
+            $new_iframe_src = $url . '?' . $this->_encode_params($lti_params);
             $embed_html = str_replace($matches[0], $new_iframe_src, $embed_html);
         }
         return str_replace('&', '&amp;', $embed_html);
@@ -138,22 +140,19 @@ class mediacore_media
 
     /**
      * Fetch an api url using curl
-     * @param string $url
+     * @param string $baseurl
      * @param array $params
      * @param bool $debug
      */
-    private function _get_curl_response($url, $params=array(), $debug=FALSE) {
+    private function _get_curl_response($baseurl, $params=array()) {
         $options = array(
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 4,
-            CURLOPT_URL => $url . (strpos($url, '?') === FALSE ? '?' : '') . $this->_encode_params($params),
+            CURLOPT_URL => $baseurl . (strpos($baseurl, '?') === FALSE ? '?' : '') . $this->_encode_params($params),
         );
         $ch = curl_init();
         curl_setopt_array($ch, $options);
-        if ($debug) {
-            $this->_debug_curl($url, $encoded_params);
-        }
         if (!$result = curl_exec($ch)) {
             return FALSE;
         }
@@ -162,7 +161,9 @@ class mediacore_media
     }
 
     /**
-     * Build the signed lti params
+     * Build the signed lti params.
+     * If force_ssl is set on the lti_type_config, then we use ssl no matter what.
+     *
      * @param string $endpoint
      * @param int $course_id
      * @param int $type_id
@@ -208,14 +209,36 @@ class mediacore_media
     }
 
     /**
-     * Output the url used in the curl request
-     * @param string $url
-     * @param array $params
+     * Get the base url
+     * @return string
      */
-    private function _debug_curl($url, $params) {
-        echo htmlentities($url . (strpos($url, '?') === FALSE ? '?' : '') . $params) . '<br/><br/>';
+    public function get_baseurl() {
+        return $this->_scheme . $this->_hostname . $this->_port;
     }
 
+    /**
+     * Get the URL scheme
+     * @return string
+     */
+    public function get_scheme() {
+        return $this->_scheme;
+    }
+
+    /**
+     * Get the media api URL
+     * @return string
+     */
+    public function get_media_api_url() {
+        return $this->get_baseurl() . '/api/media';
+    }
+
+    /**
+     * Get the media api get URL
+     * @return string
+     */
+    public function get_media_api_get_url() {
+        return $this->get_baseurl() . '/api/media/get';
+    }
 
     /**
      * Instantiate a new mediacore_media_row object
@@ -411,7 +434,7 @@ class mediacore_media_row
      * @param int $sec
      * @param bool $pad_hours
      */
-    private function _sec2hms ($sec, $pad_hours = FALSE)
+    private function _sec2hms ($sec, $pad_hours=FALSE)
     {
         $hms = "";
         $sec = (int)$sec;

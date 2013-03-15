@@ -44,20 +44,19 @@ function local_mediacore_course_delete_event_handler($course) {
  * @param int $type_id
  * @return string
  */
-function local_mediacore_build_connection_options($lti_tools, $type_id) {
-
-    $selected = ($type_id === 0) ? 'selected ' : '';
-    $html = '<option value="0" ' . $selected . '>' .
-        get_string('tinymce_public_connection', 'local_mediacore') .
-        '</option>';
-
+function local_mediacore_build_connection_options($lti_tools, $type_id=NULL) {
+    $html = '';
     foreach ($lti_tools as $key => $t) {
         $selected = ($t->id == $type_id) ? 'selected ' : '';
         $html .= '<option value="' . $t->id . '" ' . $selected . '>';
-        $html .= $t->name . ' (' .
-            get_string('tinymce_lti_connection', 'local_mediacore') .
-            ')</option>';
+        $html .= $t->name . '</option>';
     }
+    if (empty($lti_tools)) {
+        $html .= '<option value="0" >' .
+            get_string('tinymce_public_connection', 'local_mediacore') .
+            '</option>';
+    }
+
     return $html;
 }
 
@@ -65,15 +64,16 @@ function local_mediacore_build_connection_options($lti_tools, $type_id) {
  * Fetch the mediacore lti site url from config
  * @return string
  */
-function local_mediacore_fetch_lti_url() {
+function local_mediacore_fetch_lti_baseurl() {
     global $DB;
-    $config = $DB->get_record('config_plugins', array(
+    $record = $DB->get_record('config_plugins', array(
         'plugin' => MEDIACORE_LOCAL_COURSELTI_SETTING_NAME,
         'name' => 'mediacore_url',
     ));
-    return (empty($config) || empty($config->value))
-        ? 'http://demo.mediacore.tv'
-        : (string)$config->value;
+    if (empty($record) || empty($record->value)) {
+        return 'http://demo.mediacore.tv'; //default
+    }
+    return $record->value;
 }
 
 /**
@@ -84,8 +84,9 @@ function local_mediacore_fetch_courses() {
     global $DB;
     $query = "SELECT *
         FROM {course}
-    WHERE format != :format
-    AND visible = :visible";
+        WHERE format != :format
+        AND visible = :visible
+        ORDER BY shortname ASC";
     return $DB->get_records_sql($query, array(
         'format' => 'site',
         'visible' => '1',
@@ -100,10 +101,10 @@ function local_mediacore_fetch_lti_tools() {
     global $DB;
     $query = "SELECT *
         FROM {lti_types}
-    WHERE baseurl = :baseurl
-    AND state = :state";
+        WHERE baseurl = :baseurl
+        AND state = :state";
     return $DB->get_records_sql($query, array(
-        'baseurl' => local_mediacore_fetch_lti_url(),
+        'baseurl' => local_mediacore_fetch_lti_baseurl(),
         'state' => MEDIACORE_LOCAL_LTI_TOOL_STATE_CONFIGURED,
     ));
 }
@@ -111,14 +112,18 @@ function local_mediacore_fetch_lti_tools() {
 /**
  * Fetch lti tool ids by course id from config
  * @param int $cid
- * @return object
+ * @return array
  */
 function local_mediacore_fetch_lti_tool_ids_by_course_id($cid) {
     global $DB;
-    return $DB->get_record('config_plugins', array(
+    $record = $DB->get_record('config_plugins', array(
         'plugin' => MEDIACORE_LOCAL_COURSELTI_SETTING_NAME,
         'name' => (string)$cid,
     ));
+    if (empty($record) || empty($record->value)) {
+        return array();
+    }
+    return explode(',', $record->value);
 }
 
 /**
@@ -128,22 +133,17 @@ function local_mediacore_fetch_lti_tool_ids_by_course_id($cid) {
  */
 function local_mediacore_fetch_lti_tools_by_course_id($cid) {
     global $DB;
-
-    $config = local_mediacore_fetch_lti_tool_ids_by_course_id($cid);
-    if (empty($config) || empty($config->value)) {
-        return FALSE;
+    $tool_ids = local_mediacore_fetch_lti_tool_ids_by_course_id($cid);
+    if (!empty($tool_ids)) {
+        $or_where_arr = array();
+        foreach ($tool_ids as $id) {
+            array_push($or_where_arr, "id=$id");
+        }
+        $lti_types = $DB->get_records_select('lti_types', implode(' OR ', $or_where_arr));
+        if (!empty($lti_types)) {
+            return $lti_types;
+        }
     }
-
-    $or_where_arr = array();
-    $tool_ids = explode(',',$config->value);
-    foreach ($tool_ids as $id) {
-        array_push($or_where_arr, "id=$id");
-    }
-    $lti_types = $DB->get_records_select('lti_types', implode(' OR ', $or_where_arr));
-    if (!empty($lti_types)) {
-        return $lti_types;
-    }
-
     return FALSE;
 }
 
@@ -186,4 +186,3 @@ function local_mediacore_lti_build_request($lti_type, $type_config, $course) {
     $request_params['lti_message_type'] = 'basic-lti-launch-request';
     return $request_params;
 }
-

@@ -47,7 +47,7 @@ if ($hassiteconfig) {
             $header_str = get_string('setting_course_fullname_prefix', 'local_mediacore');
             $admin_setting = new admin_setting_configmulticheckbox('local_mediacore_courselti/' . $c->id,
                 "<strong>$c->fullname</strong>",
-                get_string('setting_course_lti_desc', 'local_mediacore'), null, $lti_tool_choices);
+                get_string('setting_course_lti_desc', 'local_mediacore'), NULL, $lti_tool_choices);
             $admin_setting->plugin = MEDIACORE_LOCAL_COURSELTI_SETTING_NAME;
             $settings->add($admin_setting);
         }
