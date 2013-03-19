@@ -21,7 +21,7 @@ MediaCore TinyMCE Plugin Installation:
 ======================================
 
 1. First, copy the ```lib/editor/tinymce/mediacore``` folder into the TinyMCE plugins folder: 
-	```/path/to/moodle/lib/editor/tinymce/tiny_mce/3.4.6/plugins/```
+	```/path/to/moodle/lib/editor/tinymce/tiny_mce/{version}/plugins/```
 
 2. Next, we need to let Moodle know about the TinyMCE plugin. Open:
 	```/path/to/moodle/lib/editor/tinymce/lib.php```
@@ -49,7 +49,7 @@ MediaCore TinyMCE Plugin Installation:
 ---
 MediaCore Filter and Local Plugin Installation:
 ==============================
-1. Copy the ```/filters/mediacore``` folder into ```/path/to/moodle/filters/```
+1. Copy the ```/filter/mediacore``` folder into ```/path/to/moodle/filter/```
 2. Copy the ```/local/mediacore``` folder into ```/path/to/moodle/local/```
 3. Login to Moodle as an administrator. Navigate to ```Settings > Site administration > Notifications```
 	* You should see that the ```MediaCore Media filter``` and ```MediaCore package libraries``` need "to be upgraded". 
