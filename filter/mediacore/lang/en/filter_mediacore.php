@@ -14,7 +14,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['filtername'] = 'MediaCore Media';
+$string['filtername'] = 'MediaCore media filter';
 
 //errors
 $string['filter_error_no_type_id'] = 'There was an error trying to locate this video.';

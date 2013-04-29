@@ -17,9 +17,8 @@
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
-$plugin                     = new stdClass();
-$plugin->version            = 2013031500;
 $plugin->component          = 'filter_mediacore';
-$plugin->release            = '1.6b';
+$plugin->version            = 2013031900;
 $plugin->requires           = 2011033007;
-$plugin->system_version     = 1.6; // Used to send information to MediaCore
+$plugin->release            = '2.0b';
+$plugin->dependencies = array('local_mediacore' => 2013031900);
