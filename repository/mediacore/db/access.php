@@ -6,17 +6,23 @@
  *    / /  / / /___/ /_/ /_/ // ___ / /___/ /_/ / _, _/ /___
  *   /_/  /_/_____/_____//___/_/  |_\____/\____/_/ |_/_____/
  *
- * MediaCore's local plugin language strings
+ * Plugin capabilities
  *
- * @package    local
- * @subpackage mediacore
- * @copyright  2012 MediaCore Technologies
+ * @package    repository_mediacore
+ * @category   repository
+ * @copyright  2013 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-//plugin settings
-$string['pluginname'] = 'MediaCore package config';
-$string['setting_url_label'] = 'MediaCore URL:';
-$string['setting_consumer_key_label'] = 'MediaCore Consumer Key';
-$string['setting_shared_secret_label'] = 'MediaCore Shared Secret';
+defined('MOODLE_INTERNAL') || die();
 
+$capabilities = array(
+
+    'repository/mediacore:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        )
+    )
+);

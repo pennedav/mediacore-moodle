@@ -6,17 +6,18 @@
  *    / /  / / /___/ /_/ /_/ // ___ / /___/ /_/ / _, _/ /___
  *   /_/  /_/_____/_____//___/_/  |_\____/\____/_/ |_/_____/
  *
- * MediaCore's local plugin language strings
+ * MediaCore tinymce language strings
  *
- * @package    local
+ * @package    tinymce
  * @subpackage mediacore
  * @copyright  2012 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
-//plugin settings
-$string['pluginname'] = 'MediaCore package config';
-$string['setting_url_label'] = 'MediaCore URL:';
-$string['setting_consumer_key_label'] = 'MediaCore Consumer Key';
-$string['setting_shared_secret_label'] = 'MediaCore Shared Secret';
+$string['pluginname'] = 'MediaCore media picker';
+$string['nopreview'] = 'Can not preview media.';
 
+/* All lang strings used from TinyMCE JavaScript code must be named 'pluginname:stringname', no need to create langs/en_dlg.js */
+$string['mediacore:loaderror'] = 'Sorry, an error occured while loading the MediaCore plugin';
+$string['mediacore:desc'] = 'Insert MediaCore media';

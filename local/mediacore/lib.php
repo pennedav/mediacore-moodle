@@ -15,16 +15,320 @@
  *
  */
 
-defined('MOODLE_INTERNAL') || die('Invalid access');
-require_once(dirname(__FILE__) . '/locallib.php');
-require_once(dirname(__FILE__) . '/../../mod/lti/locallib.php');
+require_once($CFG->dirroot. '/mod/lti/locallib.php');
+
+//constants
+define('MEDIACORE_PLUGIN_NAME', 'local_mediacore');
+define('MEDIACORE_SETTINGS_NAME', 'local_mediacore');
+
 
 /**
- * A Class that encapsulated results fetched from the media api endpoints
+ * A class that encapsulated the MediaCore Moodle Config
+ * Config values in config_plugins table as local_mediacore
+ */
+class mediacore_config
+{
+    public $version;
+    public $url = 'http://demo.mediacore.tv';
+    public $consumer_key;
+    public $shared_secret;
+    public $webroot;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        global $DB;
+        $query = "SELECT *
+                  FROM {config_plugins}
+                  WHERE plugin = :plugin";
+
+        $records = $DB->get_records_sql($query, array(
+            'plugin' => MEDIACORE_SETTINGS_NAME,
+        ));
+        if (!empty($records)) {
+            foreach ($records as $r) {
+                $this->{$r->name} = $r->value;
+            }
+        }
+    }
+
+    /**
+     * Whether lti is configured
+     * @return boolean
+     */
+    public function has_lti_config() {
+        return (!empty($this->url) &&
+                !empty($this->consumer_key) &&
+                !empty($this->shared_secret));
+    }
+
+    /**
+     * Get the local_media plugin version
+     * @return string
+     */
+    public function get_version() {
+        return $this->version;
+    }
+
+    /**
+     * Get the mediacore url
+     * @return string
+     */
+    public function get_url() {
+        return rtrim($this->url, '/');
+    }
+
+    /**
+     * Get the lti consumer key
+     * @return string
+     */
+    public function get_consumer_key() {
+        return $this->consumer_key;
+    }
+
+    /**
+     * Get the lti consumer shared secret
+     * @return string
+     */
+    public function get_shared_secret() {
+        return $this->shared_secret;
+    }
+
+    /**
+     * Get the moodle webroot
+     * @return string
+     */
+    public function get_webroot() {
+        return $this->webroot;
+    }
+}
+
+/**
+ * The MediaCore Moodle Client
+ * Encapsulated the client access endpoints and lti helpers
+ */
+class mediacore_client
+{
+    private $_config;
+    private $_hostname;
+    private $_port = '80';
+    private $_scheme = 'http';
+    private $_chooser_url = '/chooser';
+    private $_chooser_js_url = '/api/chooser.js';
+    private $_media_api_url = '/api/media';
+    private $_media_get_api_url = '/api/media/get';
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        global $CFG;
+        $this->_webroot = $CFG->wwwroot;
+        $this->_config = new mediacore_config();
+        $url_components = parse_url($this->_config->get_url());
+        if (isset($url_components['host'])) {
+            $this->_hostname = $url_components['host'];
+        }
+        if (isset($url_components['port'])) {
+            $this->_port = $url_components['port'];
+        }
+    }
+
+    /**
+     * The mediacore_config object
+     * @return mediacore_config
+     */
+    public function get_config() {
+        return $this->_config;
+    }
+
+    /**
+     * Whether the config is setup for lti
+     * @return boolean
+     */
+    public function has_lti_config() {
+        return $this->_config->has_lti_config();
+    }
+
+    /**
+     * Get the mediacore base url
+     * @return string|NULL
+     */
+    public function get_baseurl() {
+        if (!empty($this->_hostname)) {
+            return $this->_scheme . '://' . $this->_hostname . ':' . $this->_port;
+        }
+        return NULL;
+    }
+
+    /**
+     * Get the mediacore hostname
+     * @return string|NULL
+     */
+    public function get_hostname() {
+        return $this->_hostname;
+    }
+
+    /**
+     * Get the mediacore port
+     * @return string
+     */
+    public function get_port() {
+        return $this->_port;
+    }
+
+    /**
+     * Get the moodle webroot
+     * @return string
+     */
+    public function get_webroot() {
+        return $this->_webroot;
+    }
+
+    /**
+     * Get the chooser url
+     * @return string
+     */
+    public function get_chooser_url() {
+        return $this->get_baseurl() . $this->_chooser_url;
+    }
+
+    /**
+     * Get the chooser js url
+     * LTI-signed if there's a course_id and an lti config
+     * @return string
+     */
+    public function get_chooser_js_url() {
+        global $COURSE;
+        return ($this->_config->has_lti_config() && isset($COURSE->id))
+            ? $this->get_signed_chooser_js_url($COURSE->id)
+            : $this->get_baseurl() . $this->_chooser_js_url;
+    }
+
+    /**
+     * Sign and return the chooser.js endpoint using LTI
+     * @param string|int $course_id
+     * @return string
+     */
+    public function get_signed_chooser_js_url($course_id) {
+        $endpoint = $this->get_baseurl() . $this->_chooser_js_url;
+        return $endpoint . '?' . $this->url_encode_params($this->get_signed_lti_params(
+                $endpoint, $course_id)
+            );
+    }
+
+    /**
+     * Get the media api endpoint url
+     * @return string
+     */
+    public function get_media_api_url() {
+        return $this->get_baseurl() . $this->_media_api_url;
+    }
+
+    /**
+     * Get the media/get api endpoint url
+     * @return string
+     */
+    public function get_media_get_api_url() {
+        return $this->get_baseurl() . $this->_media_get_api_url;
+    }
+
+    /**
+     * Get the signed lti parameters
+     * uses Oauth-1x
+     * @param string $endpoint
+     * @param int $course_id
+     * @param array $params
+     * @return array
+     */
+    public function get_signed_lti_params($endpoint, $course_id, $params=array()) {
+        global $DB;
+
+        if (!$this->_config->has_lti_config()) {
+            die('There are no lti configuration params!');
+        }
+        if (empty($course_id)) {
+            die('LTI signing must contain a course id!');
+        }
+        $course = $DB->get_record('course', array('id' => (int)$course_id), '*', MUST_EXIST);
+        $key = $this->_config->get_consumer_key();
+        $secret = $this->_config->get_shared_secret();
+        $request_params = $this->get_lti_request_params($course);
+        return lti_sign_parameters(array_merge($request_params, $params), $endpoint, 'GET', $key, $secret);
+    }
+
+    /**
+     * Get the base lti request params
+     * @param int $course_id
+     * @return array
+     */
+    public function get_lti_request_params($course) {
+        global $USER, $CFG;
+
+        return array(
+            'context_id' => $course->id,
+            'context_label' => $course->shortname,
+            'context_title' => $course->fullname,
+            'ext_lms' => 'moodle-2',
+            'lti_message_type' =>'basic-lti-launch-request',
+            'lti_version' => 'LTI-1p0',
+            'roles' => lti_get_ims_role($USER, 0, $course->id),
+            'tool_consumer_info_product_family_code' => 'moodle',
+            'tool_consumer_info_version' => (string)$CFG->version,
+            'user_id' => $USER->id,
+        );
+    }
+
+    /**
+     * Get a curl response as JSON
+     * @param string $url
+     * @param array $params
+     * @return string|FALSE|NULL
+     */
+    public function get_curl_response_as_json($url, $params=array()) {
+        $options = array(
+            CURLOPT_HEADER => 0,
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_TIMEOUT => 4,
+            CURLOPT_URL => $url . (strpos($url, '?') === FALSE ? '?' : '') .
+                    $this->url_encode_params($params),
+        );
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        if (!$result) { //curl failed
+            return FALSE;
+        }
+        $obj = json_decode($result);
+        if (isset($obj->error)) { //no result found
+            return NULL;
+        }
+        return $obj; //result found
+    }
+
+    /**
+     * Urlencode the parameter values as a query string
+     * @param array $params
+     * @return string
+     */
+    public function url_encode_params($params) {
+        $encoded_params = '';
+        foreach ($params as $k=>$v) {
+            $encoded_params .= "$k=" . urlencode($v) . "&";
+        }
+        return substr($encoded_params, 0 , -1);
+    }
+}
+
+/**
+ * A class that encapsulated results fetched from the media api endpoints
  */
 class mediacore_media
 {
-    private $_baseurl;
+    private $_client;
     private $_course;
     private $_course_id;
     private $_curr_pg;
@@ -43,26 +347,22 @@ class mediacore_media
 
     /**
      * Constructor
-     * @param string $url
+     * @param {mediacore_client} $client D.I.
      */
-    public function __construct($url) {
-        $url_components = parse_url($url);
-        $this->_scheme = 'http://';
-        $this->_hostname = $url_components['host'];
-        $this->_port = (isset($url_components['port'])) ? ':' . $url_components['port'] : '';
-        $this->_baseurl = $this->_scheme . $this->_hostname . $this->_port;
+    public function __construct($client) {
+        $this->_client = $client;
     }
 
     /**
-     * Fetch media from the "/api/media" endpoint
+     * Fetch media from the media api endpoint url
+     * LTI signed if applicable
      * @param int $curr_pg
      * @param string $search
      * @param int $limit
      * @param int|NULL $course_id
-     * @param int_NULL $type_id
      * @return array
      */
-    public function fetch_media($curr_pg=0, $search='', $limit=6, $course_id=NULL, $type_id=NULL) {
+    public function fetch_media($curr_pg=0, $search='', $limit=6, $course_id=NULL) {
 
         $this->_curr_pg = $curr_pg; //zero-indexed
         $this->_search = $search;
@@ -75,13 +375,14 @@ class mediacore_media
             'search' => $this->_search,
         );
 
-        $is_lti_request = (!empty($course_id) && !empty($type_id));
-        if ($is_lti_request) {
-            $params = $this->_get_signed_lti_params($this->get_media_api_url(), $course_id, $type_id, $params);
+        if ($this->_client->has_lti_config() && $course_id) {
+            $params = $this->_client->get_signed_lti_params($this->_client->get_media_api_url(),
+                    $course_id, $params);
         }
-        $result_obj = $this->_get_curl_response($this->get_media_api_url(), $params);
+        $result_obj = $this->_client->get_curl_response_as_json(
+                $this->_client->get_media_api_url(), $params);
         if (empty($result_obj)) {
-            return FALSE;
+            return $result_obj;
         }
 
         //build result data
@@ -96,161 +397,60 @@ class mediacore_media
     }
 
     /**
-     * Fetch a media item's embed code
+     * Fetch the media embed
+     * LTI signed if applicable
      * @param string $slug
      * @param int|NULL $course_id
-     * @param int|NULL $type_id
-     * @return string
      */
-    public function fetch_media_embed($slug, $course_id=NULL, $type_id=NULL) {
+    public function fetch_media_embed($slug, $course_id=NULL) {
         $params = array('slug' => $slug);
-        $is_lti_request = (!empty($course_id) && !empty($type_id));
-        if ($is_lti_request) {
-            $params = $this->_get_signed_lti_params($this->get_media_api_get_url(), $course_id, $type_id, $params);
+        if ($this->_client->has_lti_config() && $course_id) {
+            $params = $this->_client->get_signed_lti_params(
+                $this->_client->get_media_get_api_url(), $course_id, $params);
         }
-        $result_obj = $this->_get_curl_response($this->get_media_api_get_url(), $params);
+        $result_obj = $this->_client->get_curl_response_as_json(
+                $this->_client->get_media_get_api_url(), $params);
         if (empty($result_obj)) {
-            return FALSE;
+            return $result_obj;
         }
-        return ($is_lti_request)
-            ? $this->_get_embed_iframe_with_lti_params($result_obj->embed, $course_id, $type_id)
+        return ($this->_client->has_lti_config() && $course_id)
+            ? $this->_get_embed_iframe_with_lti_params($result_obj->embed, $course_id)
             : $result_obj->embed;
     }
 
     /**
-     * Get the embed html with signed lti parameters
+     * Get the iframe embed with signed lti parameters
      * @param string $embed_html
      * @param int $course_id
-     * @param int $type_id
      * @return string
      */
-    private function _get_embed_iframe_with_lti_params($embed_html, $course_id, $type_id) {
-        $baseurl_regex = '/' . str_replace('/', '\/', $this->get_baseurl()) . '\/[^"]+/i';
+    private function _get_embed_iframe_with_lti_params($embed_html, $course_id) {
+        $baseurl_regex = '/' . str_replace('/', '\/', $this->_client->get_baseurl()) . '\/[^"]+/i';
         preg_match($baseurl_regex, $embed_html, $matches);
         if (isset($matches[0])) {
             $url_components = parse_url($matches[0]);
-            $url = $this->_baseurl . $url_components['path'];
+            $url = $this->_client->get_baseurl() . $url_components['path'];
             $params = array('iframe' => 'True');
-            $lti_params = $this->_get_signed_lti_params($url, $course_id, $type_id, $params);
-            $new_iframe_src = $url . '?' . $this->_encode_params($lti_params);
+            $lti_params = $this->_client->get_signed_lti_params($url, $course_id, $params);
+            $new_iframe_src = $url . '?' . $this->_client->url_encode_params($lti_params);
             $embed_html = str_replace($matches[0], $new_iframe_src, $embed_html);
         }
         return str_replace('&', '&amp;', $embed_html);
     }
 
-    /**
-     * Fetch an api url using curl
-     * @param string $baseurl
-     * @param array $params
-     * @param bool $debug
-     */
-    private function _get_curl_response($baseurl, $params=array()) {
-        $options = array(
-            CURLOPT_HEADER => 0,
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_TIMEOUT => 4,
-            CURLOPT_URL => $baseurl . (strpos($baseurl, '?') === FALSE ? '?' : '') . $this->_encode_params($params),
-        );
-        $ch = curl_init();
-        curl_setopt_array($ch, $options);
-        if (!$result = curl_exec($ch)) {
-            return FALSE;
-        }
-        curl_close($ch);
-        return json_decode($result);
-    }
 
     /**
-     * Build the signed lti params.
-     * If force_ssl is set on the lti_type_config, then we use ssl no matter what.
-     *
-     * @param string $endpoint
-     * @param int $course_id
-     * @param int $type_id
-     * @param array $params
-     * @return array
-     */
-    private function _get_signed_lti_params($endpoint, $course_id, $type_id, $params=array()) {
-        global $DB;
-
-        $lti_type = $DB->get_record('lti_types', array('id' => $type_id), '*', MUST_EXIST);
-        $type_config = lti_get_type_config($type_id);
-
-        if ($this->_course_id != $course_id) {
-            $this->_course_id = $course_id;
-            $this->_course = $DB->get_record('course', array('id' => $this->_course_id), '*', MUST_EXIST);
-        }
-
-        $key = ''; $secret = '';
-        if (!empty($type_config['resourcekey'])) {
-            $key = $type_config['resourcekey'];
-        }
-        if (!empty($type_config['password'])) {
-            $secret = $type_config['password'];
-        }
-        if (empty($key) || empty($secret)) {
-            die('No key and/or secret, Oauth signature will fail!');
-        }
-        $request_params = local_mediacore_lti_build_request($lti_type, $type_config, $this->_course);
-        return lti_sign_parameters(array_merge($request_params, $params), $endpoint, 'GET', $key, $secret);
-    }
-
-    /**
-     * Urlencode the url parameter values
-     * @param array $params
-     * @return string
-     */
-    private function _encode_params($params) {
-        $encoded_params = '';
-        foreach ($params as $k=>$v) {
-            $encoded_params .= "$k=" . urlencode($v) . "&";
-        }
-        return substr($encoded_params, 0 , -1);
-    }
-
-    /**
-     * Get the base url
-     * @return string
-     */
-    public function get_baseurl() {
-        return $this->_scheme . $this->_hostname . $this->_port;
-    }
-
-    /**
-     * Get the URL scheme
-     * @return string
-     */
-    public function get_scheme() {
-        return $this->_scheme;
-    }
-
-    /**
-     * Get the media api URL
-     * @return string
-     */
-    public function get_media_api_url() {
-        return $this->get_baseurl() . '/api/media';
-    }
-
-    /**
-     * Get the media api get URL
-     * @return string
-     */
-    public function get_media_api_get_url() {
-        return $this->get_baseurl() . '/api/media/get';
-    }
-
-    /**
-     * Instantiate a new mediacore_media_row object
-     * @param object $media
-     * @return object
+     * Get a media row object
+     * @param object
+     * @return mediacore_media_row
      */
     public function get_media_row($media) {
         return new mediacore_media_row($media);
     }
 
     /**
-     * Get the current zero-indexed page number
+     * Get the current media rowset page number
+     * zero-indexed
      * @return int
      */
     public function get_current_page() {
@@ -258,15 +458,15 @@ class mediacore_media
     }
 
     /**
-     * Get the current human readable page number
-     * @return string
+     * Get the current media rowset page number
+     * @return int
      */
     public function get_current_page_str() {
         return '' . $this->_curr_pg + 1;
     }
 
     /**
-     * Get the previous page number
+     * Get the previous rowset page number
      * @return int
      */
     public function get_previous_page() {
@@ -274,15 +474,15 @@ class mediacore_media
     }
 
     /**
-     * Get whether there is a previous page
-     * @return bool
+     * Whether the rowset has a previous page
+     * @return boolean
      */
     public function has_previous_page() {
         return $this->_has_prev_pg;
     }
 
     /**
-     * Get the next page number
+     * Get the next rowset page number
      * @return int
      */
     public function get_next_page() {
@@ -290,15 +490,15 @@ class mediacore_media
     }
 
     /**
-     * Get whether there is a next page
-     * @return bool
+     * Whether the rowset has a next page
+     * @return boolean
      */
     public function has_next_page() {
         return $this->_has_next_pg;
     }
 
     /**
-     * Get the page count
+     * Get the rowset page count
      * @return int
      */
     public function get_page_count() {
@@ -306,7 +506,8 @@ class mediacore_media
     }
 
     /**
-     * Get the page count string
+     * Get the rowset page count string
+     * i.e. Page 1 of 2
      * @return string
      */
     public function get_page_count_str() {
@@ -319,7 +520,7 @@ class mediacore_media
     }
 
     /**
-     * Get the search query string
+     * Get the current search query
      * @return string
      */
     public function get_search_query() {

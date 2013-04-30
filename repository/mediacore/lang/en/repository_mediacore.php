@@ -6,17 +6,15 @@
  *    / /  / / /___/ /_/ /_/ // ___ / /___/ /_/ / _, _/ /___
  *   /_/  /_/_____/_____//___/_/  |_\____/\____/_/ |_/_____/
  *
- * MediaCore's local plugin language strings
+ * MediaCore repository search
  *
- * @package    local
- * @subpackage mediacore
- * @copyright  2012 MediaCore Technologies
+ * @package    repository_mediacore
+ * @category   repository
+ * @copyright  2013 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-//plugin settings
-$string['pluginname'] = 'MediaCore package config';
-$string['setting_url_label'] = 'MediaCore URL:';
-$string['setting_consumer_key_label'] = 'MediaCore Consumer Key';
-$string['setting_shared_secret_label'] = 'MediaCore Shared Secret';
-
+$string['keyword'] = 'Search for';
+$string['pluginname'] = 'MediaCore search';
+$string['mediacore:view'] = 'View mediacore repository';
+$string['configplugin'] = 'MediaCore repository type configuration';

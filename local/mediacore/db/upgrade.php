@@ -14,11 +14,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
-$handlers = array(
-	'course_deleted' => array(
-		'handlerfile' => '/local/mediacore/lib.php',
-		'handlerfunction' => 'local_mediacore_course_delete_event_handler',
-		'schedule' => 'instant',
-		'internal' => 1,
-	)
-);
+
+function xmldb_local_mediacore_upgrade($oldversion) {
+    global $CFG, $DB;
+    $DB->delete_records('config_plugins', array('plugin'=>'local_mediacore_courselti'));
+    return true;
+}
