@@ -47,7 +47,7 @@ the following directories do not exist:
 
 
 After doing this you will also need to Navigate to: `Site administration ->
-Plugins -> Plugins Overview` and delete the following MediaCore plugin code
+Plugins -> Plugins Overview` and **uninstall** the following MediaCore plugin code
 from the Moodle database:
 
 - `MediaCore media filter`
@@ -70,26 +70,32 @@ correct directories.
 - `repository/mediacore` into `path/to/moodle/repository/`
 
 To finalize the installation you will need to navigate to: `Site administration
--> Notifications` and hit ""check for available updates"". Click ""Upgrade
-Moodle database now"" to complete this step.
+-> Notifications` and click "Check for available updates". Click "Upgrade
+Moodle database now" to complete this step.
+
+### Moodle/MediaCore LTI config: ###
 
 To hook your MediaCore site into Moodle you must navigate to: `Site
-administration -> Plugins -> Local plugins -> MediaCore LTI config` and enter:
+administration -> Plugins -> Local plugins -> MediaCore package config` and enter:
 
-- the URL of your MediaCore site (i.e. http://demo.mediacore.tv).
-- the name of your LTI consumer key (this must match a valid LTI consumer in
+- the `URL` of your MediaCore site (i.e. http://demo.mediacore.tv).
+- the name of your `LTI consumer key` (this must match a valid LTI consumer in
   your MediaCore site)
-- the secret of your LTI shared secret (this also must match the secret in the
+- the secret of your `LTI shared secret` (this also must match the secret in the
   LTI consumer above)
+  
+### Moodle/MediaCore Filter config: ###
 
 In order for videos to display in Moodle, you must enable the MediaCore Filter.
 This can be turned on by navigating to: `Site administration -> Plugins ->
 Filters -> Manage Filters` and selecting `On` from drop down menu in the
 `active` column next to 'MediaCore media filter'.
 
+### Moodle/MediaCore Repository config: ###
+
 You will also need to enable the repository. it may be turned on by navigating
 to: `Site administration -> Plugins -> Repositories -> Manage Repositories` and
-selecting ""Enabled and visible"" from drop down menu next to "MediaCore
+selecting `Enabled and visible` from drop down menu next to "MediaCore
 search".
 
 About
