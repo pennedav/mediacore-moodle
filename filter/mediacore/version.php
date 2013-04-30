@@ -8,8 +8,8 @@
  *
  * MediaCore filter
  *
- * @package    filter
- * @subpackage mediacore
+ * @package    filter_mediacore
+ * @subpackage filter
  * @copyright  2012 MediaCore Technologies
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -17,8 +17,9 @@
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
 
+$plugin                     = new StdClass();
 $plugin->component          = 'filter_mediacore';
-$plugin->version            = 2013031900;
+$plugin->version            = 2013042900;
 $plugin->requires           = 2011033007;
 $plugin->release            = '2.0b';
-$plugin->dependencies = array('local_mediacore' => 2013031900);
+$plugin->dependencies       = array('local_mediacore' => 2013031900);
