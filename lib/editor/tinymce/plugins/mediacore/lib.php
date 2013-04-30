@@ -47,9 +47,9 @@ class tinymce_mediacore extends editor_tinymce_plugin {
             $params['chooser_params'] = array();
             if (isset($COURSE->id)) {
                 $params['chooser_params'] = array(
-                        'context_id'    => $COURSE->id,
-                        'context_title' => $COURSE->fullname,
-                        'context_label' => $COURSE->shortname,
+                        'context_id'    => urlencode($COURSE->id),
+                        'context_title' => urlencode($COURSE->fullname),
+                        'context_label' => urlencode($COURSE->shortname),
                     );
             }
 
