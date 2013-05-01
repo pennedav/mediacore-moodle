@@ -10,7 +10,7 @@
 A set of [Moodle](http://moodle.org) plugins that integrate with
 [MediaCore](http://mediacore.com).
 
-Designed to work with Moodle 2.3 and 2.4+
+Designed to work with Moodle 2.4
 
 Overview
 ===
