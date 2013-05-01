@@ -377,6 +377,42 @@ class mediacore_client
         }
         return substr($encoded_params, 0 , -1);
     }
+
+
+    /**
+     * Get the custom tinymce params
+     * TODO namespace these keys
+     * @return array
+     */
+    public function get_tinymce_params() {
+        global $CFG, $COURSE;
+        $params = array(
+            'chooser_js_url' => $this->get_chooser_js_url(),
+        );
+        if ($this->has_lti_config() && isset($COURSE->id)) {
+            $params['host'] = $this->get_hostname_and_port();
+            $lti_params = array(
+                    'origin' => $this->get_webroot(),
+                    'debug' => ((boolean)$CFG->debugdisplay)
+                            ? 'true' : 'false',
+                );
+            $params['chooser_query_str'] = $this->url_encode_params(
+                    $this->get_signed_lti_params(
+                        $this->get_chooser_url(),
+                        $COURSE->id,
+                        $lti_params
+                    )
+                );
+            $params['ieframe_query_str'] = $this->url_encode_params(
+                    $this->get_signed_lti_params(
+                        $this->get_ieframe_url(),
+                        $COURSE->id,
+                        $lti_params
+                    )
+                );
+        }
+        return $params;
+    }
 }
 
 /**
