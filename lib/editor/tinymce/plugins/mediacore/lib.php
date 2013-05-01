@@ -44,12 +44,27 @@ class tinymce_mediacore extends editor_tinymce_plugin {
 
             $mcore_client = new mediacore_client();
             $params['chooser_js_url'] = $mcore_client->get_chooser_js_url();
-            $params['chooser_params'] = array();
-            if (isset($COURSE->id)) {
-                $params['chooser_params'] = array(
-                        'context_id'    => urlencode($COURSE->id),
-                        'context_title' => urlencode($COURSE->fullname),
-                        'context_label' => urlencode($COURSE->shortname),
+
+            if ($mcore_client->has_lti_config() && isset($COURSE->id)) {
+                $params['host'] = $mcore_client->get_hostname_and_port();
+                $lti_params = array(
+                        'origin' => $mcore_client->get_webroot(),
+                        'debug' => ((boolean)$CFG->debugdisplay)
+                                ? 'true' : 'false',
+                    );
+                $params['chooser_query_str'] = $mcore_client->url_encode_params(
+                        $mcore_client->get_signed_lti_params(
+                            $mcore_client->get_chooser_url(),
+                            $COURSE->id,
+                            $lti_params
+                        )
+                    );
+                $params['ieframe_query_str'] = $mcore_client->url_encode_params(
+                        $mcore_client->get_signed_lti_params(
+                            $mcore_client->get_ieframe_url(),
+                            $COURSE->id,
+                            $lti_params
+                        )
                     );
             }
 
