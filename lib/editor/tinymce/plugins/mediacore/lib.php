@@ -43,30 +43,7 @@ class tinymce_mediacore extends editor_tinymce_plugin {
             }
 
             $mcore_client = new mediacore_client();
-            $params['chooser_js_url'] = $mcore_client->get_chooser_js_url();
-
-            if ($mcore_client->has_lti_config() && isset($COURSE->id)) {
-                $params['host'] = $mcore_client->get_hostname_and_port();
-                $lti_params = array(
-                        'origin' => $mcore_client->get_webroot(),
-                        'debug' => ((boolean)$CFG->debugdisplay)
-                                ? 'true' : 'false',
-                    );
-                $params['chooser_query_str'] = $mcore_client->url_encode_params(
-                        $mcore_client->get_signed_lti_params(
-                            $mcore_client->get_chooser_url(),
-                            $COURSE->id,
-                            $lti_params
-                        )
-                    );
-                $params['ieframe_query_str'] = $mcore_client->url_encode_params(
-                        $mcore_client->get_signed_lti_params(
-                            $mcore_client->get_ieframe_url(),
-                            $COURSE->id,
-                            $lti_params
-                        )
-                    );
-            }
+            $params = $params + $mcore_client->get_tinymce_params();
 
             // Add button after emoticon button in advancedbuttons3.
             $added = $this->add_button_after($params, 3, 'mediacore', 'moodleemoticon', false);
