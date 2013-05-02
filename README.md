@@ -82,7 +82,9 @@ Moodle database now" to complete this step.
 To hook your MediaCore site into Moodle you must navigate to: `Site
 administration -> Plugins -> Local plugins -> MediaCore package config` and enter:
 
-- the `URL` of your MediaCore site (i.e. http://demo.mediacore.tv).
+- the `URL` of your MediaCore site (i.e. http://demo.mediacore.tv). Note if your
+Moodle site is served over https, then your MediaCore site url should also include
+https (i.e. https://demo.mediacore.tv)
 - the name of your `LTI consumer key` (this must match a valid LTI consumer in
   your MediaCore site)
 - the secret of your `LTI shared secret` (this also must match the secret in the
