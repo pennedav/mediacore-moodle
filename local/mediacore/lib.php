@@ -32,13 +32,15 @@ class mediacore_config
     public $url = 'http://demo.mediacore.tv';
     public $consumer_key;
     public $shared_secret;
-    public $webroot;
+    private $_webroot;
 
     /**
      * Constructor
      */
     public function __construct() {
-        global $DB;
+        global $CFG, $DB;
+
+        $this->_webroot = $CFG->wwwroot;
         $query = "SELECT *
                   FROM {config_plugins}
                   WHERE plugin = :plugin";
@@ -48,7 +50,9 @@ class mediacore_config
         ));
         if (!empty($records)) {
             foreach ($records as $r) {
-                $this->{$r->name} = $r->value;
+                if (!empty($r->value)) {
+                    $this->{$r->name} = $r->value;
+                }
             }
         }
     }
@@ -100,7 +104,7 @@ class mediacore_config
      * @return string
      */
     public function get_webroot() {
-        return $this->webroot;
+        return $this->_webroot;
     }
 }
 
@@ -125,14 +129,15 @@ class mediacore_client
      */
     public function __construct() {
         global $CFG;
-        $this->_webroot = $CFG->wwwroot;
+
         $this->_config = new mediacore_config();
-        $url_components = parse_url($this->_config->get_url());
-        if (isset($url_components['host'])) {
-            $this->_hostname = $url_components['host'];
-        }
-        if (isset($url_components['port'])) {
-            $this->_port = $url_components['port'];
+        $this->_scheme = parse_url($this->_config->get_webroot(),
+            PHP_URL_SCHEME);
+
+        $mcore_url_components = parse_url($this->_config->get_url());
+        $this->_hostname = $mcore_url_components['host'];
+        if (isset($mcore_url_components['port'])) {
+            $this->_port = $mcore_url_components['port'];
         }
     }
 
@@ -199,11 +204,41 @@ class mediacore_client
     }
 
     /**
+     * Get the mediacore scheme
+     * @return string
+     */
+    public function get_scheme() {
+        return $this->_scheme;
+    }
+
+    /**
      * Get the moodle webroot
      * @return string
      */
     public function get_webroot() {
-        return $this->_webroot;
+        return $this->_config->get_webroot();
+    }
+
+    /**
+     * Get the chooser js url
+     * LTI-signed if there's a course_id and an lti config
+     * @return string
+     */
+    public function get_chooser_js_url() {
+        return $this->get_baseurl() . $this->_chooser_js_url;
+    }
+
+    /**
+     * Sign and return the chooser.js endpoint using LTI
+     * XXX: Not used
+     * @param string|int $course_id
+     * @return string
+     */
+    public function get_signed_chooser_js_url($course_id) {
+        $endpoint = $this->get_baseurl() . $this->_chooser_js_url;
+        return $endpoint . '?' . $this->url_encode_params($this->get_signed_lti_params(
+                $endpoint, $course_id)
+            );
     }
 
     /**
@@ -247,28 +282,6 @@ class mediacore_client
      */
     public function get_signed_ieframe_url($course_id) {
         $endpoint = $this->get_baseurl() . $this->_ieframe_url;
-        return $endpoint . '?' . $this->url_encode_params($this->get_signed_lti_params(
-                $endpoint, $course_id)
-            );
-    }
-
-    /**
-     * Get the chooser js url
-     * LTI-signed if there's a course_id and an lti config
-     * @return string
-     */
-    public function get_chooser_js_url() {
-        return $this->get_baseurl() . $this->_chooser_js_url;
-    }
-
-    /**
-     * Sign and return the chooser.js endpoint using LTI
-     * XXX: Not used
-     * @param string|int $course_id
-     * @return string
-     */
-    public function get_signed_chooser_js_url($course_id) {
-        $endpoint = $this->get_baseurl() . $this->_chooser_js_url;
         return $endpoint . '?' . $this->url_encode_params($this->get_signed_lti_params(
                 $endpoint, $course_id)
             );
@@ -386,16 +399,13 @@ class mediacore_client
      */
     public function get_tinymce_params() {
         global $CFG, $COURSE;
-        $params = array(
-            'chooser_js_url' => $this->get_chooser_js_url(),
-        );
         if ($this->has_lti_config() && isset($COURSE->id)) {
-            $params['host'] = $this->get_hostname_and_port();
             $lti_params = array(
                     'origin' => $this->get_webroot(),
-                    'debug' => ((boolean)$CFG->debugdisplay)
-                            ? 'true' : 'false',
                 );
+            if ((boolean)$CFG->debugdisplay) {
+                $lti_params['debug'] = 'true';
+            }
             $params['chooser_query_str'] = $this->url_encode_params(
                     $this->get_signed_lti_params(
                         $this->get_chooser_url(),
@@ -411,6 +421,9 @@ class mediacore_client
                     )
                 );
         }
+        $params['chooser_js_url'] = $this->get_chooser_js_url();
+        $params['host'] = $this->get_hostname_and_port();
+        $params['scheme'] = $this->get_scheme();
         return $params;
     }
 }
