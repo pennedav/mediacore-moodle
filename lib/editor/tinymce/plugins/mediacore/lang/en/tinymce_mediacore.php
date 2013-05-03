@@ -15,9 +15,9 @@
  *
  */
 
-$string['pluginname'] = 'MediaCore media picker';
-$string['nopreview'] = 'Can not preview media.';
+$string['pluginname'] = 'MediaCore Chooser';
+$string['nopreview'] = 'Cannot preview media.';
 
 /* All lang strings used from TinyMCE JavaScript code must be named 'pluginname:stringname', no need to create langs/en_dlg.js */
-$string['mediacore:loaderror'] = 'Sorry, an error occured while loading the MediaCore plugin';
-$string['mediacore:desc'] = 'Insert MediaCore media';
+$string['mediacore:loaderror'] = 'Sorry, an error occured while loading the MediaCore Chooser plugin';
+$string['mediacore:desc'] = 'MediaCore Chooser';
