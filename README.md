@@ -10,15 +10,13 @@
 A set of [Moodle](http://moodle.org) plugins that integrate with
 [MediaCore](http://mediacore.com).
 
-Designed to work with Moodle 2.4
+Designed to work with Moodle 2.4+
 
-Overview
-===
+## Overview ##
 These plugins provide a rich set of Moodle-MediaCore integrations using LMS-LTI
 to connect with your MediaCore site without having to leave Moodle.
 
-Moodle Plugins
-===
+## Moodle Plugins ##
 
 **Local** - `local/mediacore` - Provides a custom LTI integration that is used
 by the other plugins.
@@ -34,11 +32,10 @@ a custom button added to every TinyMCE editor.
 TinyMCE and Repository plugins into MediaCore's embedded video player.
 
 
-Installation
-===
+## Installation/Upgrade ##
 
-MediaCore Plugin:
----
+
+### Upgrading from MediaCore Plugin v1.5/v1.6 ###
 
 To make the installation go smoothly we recommend you remove any old versions
 of the MediaCore plugin from your Moodle install. This is done by removing the
@@ -64,8 +61,12 @@ from the Moodle database:
   no longer valid.*
 
 Once any old versions have been removed, you can begin to install the new
-version of the plugin. This is done by copying the following folders into the
-correct directories.
+version of the plugin. 
+
+### Installing/Upgrading from MediaCore Plugin v2.0+ ###
+
+Upgrading the MediaCore plugin v2.0 is done by copying the following folders into 
+the correct Moodle directories.
 
 - `filters/mediacore` into `path/to/moodle/filters/`
 - `lib/editor/tinymce/plugins/mediacore` into
@@ -77,7 +78,7 @@ To finalize the installation you will need to navigate to: `Site administration
 -> Notifications` and click "Check for available updates". Click "Upgrade
 Moodle database now" to complete this step.
 
-### Moodle/MediaCore LTI config: ###
+### Moodle/MediaCore LTI configuration setup: ###
 
 To hook your MediaCore site into Moodle you must navigate to: `Site
 administration -> Plugins -> Local plugins -> MediaCore package config` and enter:
@@ -90,22 +91,21 @@ https (i.e. https://demo.mediacore.tv)
 - the secret of your `LTI shared secret` (this also must match the secret in the
   LTI consumer above)
   
-### Moodle/MediaCore Filter config: ###
+### Moodle/MediaCore Filter configuration setup: ###
 
 In order for videos to display in Moodle, you must enable the MediaCore Filter.
 This can be turned on by navigating to: `Site administration -> Plugins ->
 Filters -> Manage Filters` and selecting `On` from drop down menu in the
 `active` column next to 'MediaCore media filter'.
 
-### Moodle/MediaCore Repository config: ###
+### Moodle/MediaCore Repository configuration setup: ###
 
 You will also need to enable the repository. it may be turned on by navigating
 to: `Site administration -> Plugins -> Repositories -> Manage Repositories` and
 selecting `Enabled and visible` from drop down menu next to "MediaCore
 search".
 
-About
-===
+## About ##
 
 [MediaCore](http://mediacore.com/) is an online video platform for managing,
 encoding, monetizing and delivering video to mobile and desktop devices.
