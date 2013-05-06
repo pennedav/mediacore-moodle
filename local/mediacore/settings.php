@@ -26,19 +26,22 @@ if ($hassiteconfig) {
 
     $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/url',
             get_string('setting_url_label', MEDIACORE_PLUGIN_NAME),
-            '', 'http://demo.mediacore.tv', PARAM_TEXT);
+            get_string('setting_url_desc', MEDIACORE_PLUGIN_NAME),
+            'http://demo.mediacore.tv', PARAM_TEXT);
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 
     $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME .'/consumer_key',
             get_string('setting_consumer_key_label', MEDIACORE_PLUGIN_NAME),
-            '', '', PARAM_TEXT);
+            get_string('setting_consumer_key_desc', MEDIACORE_PLUGIN_NAME),
+            '', PARAM_TEXT);
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 
     $setting = new admin_setting_configtext(MEDIACORE_SETTINGS_NAME . '/shared_secret',
             get_string('setting_shared_secret_label', MEDIACORE_PLUGIN_NAME),
-            '', '', PARAM_TEXT);
+            get_string('setting_shared_secret_desc', MEDIACORE_PLUGIN_NAME),
+            '', PARAM_TEXT);
     $setting->plugin = MEDIACORE_SETTINGS_NAME;
     $settings->add($setting);
 
