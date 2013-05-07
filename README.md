@@ -105,6 +105,13 @@ to: `Site administration -> Plugins -> Repositories -> Manage Repositories` and
 selecting `Enabled and visible` from drop down menu next to "MediaCore
 search".
 
+## Support Links ##
+
+- [How do I download and install the MediaCore plugin for Moodle?](http://support.mediacore.com/customer/portal/articles/1122218-how-do-i-download-and-install-the-mediacore-plugin-for-moodle-v2-0-)
+- [How do I use the Moodle File Picker to embed content into Moodle?](http://support.mediacore.com/customer/portal/articles/1124220-how-do-i-use-the-file-picker-to-embed-content-into-moodle-)
+- [How do I use the MediaCore Chooser to embed content into Moodle?](http://support.mediacore.com/customer/portal/articles/1124241-how-do-i-use-the-chooser-to-embed-content-into-moodle-)
+
+
 ## About ##
 
 [MediaCore](http://mediacore.com/) is an online video platform for managing,
