@@ -19,6 +19,6 @@ defined('MOODLE_INTERNAL') || die('Invalid access');
 
 $plugin                     = new stdClass();
 $plugin->component          = 'local_mediacore';
-$plugin->version            = 2013050100;
+$plugin->version            = 2013050700;
 $plugin->requires           = 2011033007;
 $plugin->release            = '2.0b';
