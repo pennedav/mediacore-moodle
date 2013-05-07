@@ -335,11 +335,22 @@ class mediacore_client
     public function get_lti_request_params($course) {
         global $USER, $CFG;
 
+        $user_given = (isset($USER->firstname)) ? $USER->firstname : '';
+        $user_family = (isset($USER->lastname)) ? $USER->lastname : '';
+        $user_full = (isset($USER->firstname, $USER->lastname))
+            ? $USER->firstname . ' ' . $USER->lastname
+            : '';
+        $user_email = (isset($USER->email)) ? $USER->email: '';
+
         return array(
             'context_id' => $course->id,
             'context_label' => $course->shortname,
             'context_title' => $course->fullname,
             'ext_lms' => 'moodle-2',
+            'lis_person_name_family' =>  $user_family,
+            'lis_person_name_full' =>  $user_full,
+            'lis_person_name_given' =>  $user_given,
+            'lis_person_contact_email_primary' => $user_email,
             'lti_message_type' =>'basic-lti-launch-request',
             'lti_version' => 'LTI-1p0',
             'roles' => lti_get_ims_role($USER, 0, $course->id),
