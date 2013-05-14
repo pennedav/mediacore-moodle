@@ -346,6 +346,7 @@ class mediacore_client
             'context_id' => $course->id,
             'context_label' => $course->shortname,
             'context_title' => $course->fullname,
+            'debug' => ((boolean)$CFG->debugdisplay) ? 'true' : 'false',
             'ext_lms' => 'moodle-2',
             'lis_person_name_family' =>  $user_family,
             'lis_person_name_full' =>  $user_full,
@@ -414,9 +415,6 @@ class mediacore_client
             $lti_params = array(
                     'origin' => $this->get_webroot(),
                 );
-            if ((boolean)$CFG->debugdisplay) {
-                $lti_params['debug'] = 'true';
-            }
             $params['chooser_query_str'] = $this->url_encode_params(
                     $this->get_signed_lti_params(
                         $this->get_chooser_url(),
