@@ -15,6 +15,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die('Invalid access');
+global $CFG;
 require_once($CFG->dirroot . '/repository/lib.php');
 require_once($CFG->dirroot . '/local/mediacore/lib.php');
 
