@@ -38,7 +38,7 @@ class tinymce_mediacore extends editor_tinymce_plugin {
 
             // If mediacore filter is disabled, do not add button.
             $filters = filter_get_active_in_context($context);
-            if (!array_key_exists('filter/mediacore', $filters)) {
+            if (!array_key_exists('mediacore', $filters)) {
                 return;
             }
 
