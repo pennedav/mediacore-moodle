@@ -37,8 +37,10 @@ class tinymce_mediacore extends editor_tinymce_plugin {
             global $CFG, $COURSE;
 
             // If mediacore filter is disabled, do not add button.
+            // Note: Test for "filter/mediacore" to remain compatible with Moodle < 2.5
             $filters = filter_get_active_in_context($context);
-            if (!array_key_exists('mediacore', $filters)) {
+            if (!array_key_exists('mediacore', $filters)
+                && !array_key_exists('filter/mediacore', $filters)) {
                 return;
             }
 
